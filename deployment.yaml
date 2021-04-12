@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-server
+  namespace: bah
+  labels:
+    app: http-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-server
+  template:
+    metadata:
+      labels:
+        app: http-server
+    spec:
+      containers:
+        - name: http-server
+          image: http-server
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 8080
+            name: http-port
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  namespace: bah
+  labels:
+    app: http-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-client
+  template:
+    metadata:
+      labels:
+        app: http-client
+    spec:
+      containers:
+        - name: http-client
+          image: http-client
+          imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-service
+  namespace: bah
+  labels:
+    app: http-server
+spec:
+  ports:
+    - port: 8080
+      name: http-port
+  selector:
+    app: http-server
